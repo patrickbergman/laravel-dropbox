@@ -6,6 +6,8 @@ use Dcblogdev\Dropbox\Facades\Dropbox as Api;
 use Dcblogdev\Dropbox\Models\DropboxToken;
 use Dcblogdev\Dropbox\Resources\Files;
 
+use Illuminate\Support\Carbon;
+
 use GuzzleHttp\Client;
 use Exception;
 
@@ -170,9 +172,7 @@ class Dropbox
 
         if (isset($token->refresh_token)) {
             // Check if token is expired
-            // Get current time + 5 minutes (to allow for time differences)
-            $now = time() + 300;
-            if ($token->expires_in <= $now) {
+            if (Carbon::parse($token->expires_in)->isPast()) {
                 // Token is expired (or very close to it) so let's refresh
                 $params = [
                     'grant_type'    => 'refresh_token',
